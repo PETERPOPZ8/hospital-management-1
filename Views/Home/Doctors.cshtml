@@ -1,0 +1,93 @@
+@model IEnumerable<HospitalAppointmentSystem.Models.Doctor>
+@{
+    ViewData["Title"] = "Find Doctors";
+    var departments = ViewBag.Departments as List<HospitalAppointmentSystem.Models.Department> ?? new List<HospitalAppointmentSystem.Models.Department>();
+    int? selectedDept = ViewBag.SelectedDepartmentId as int?;
+    string search = ViewBag.Search as string ?? "";
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1"><i class="bi bi-person-badge text-primary me-2"></i> Doctors Directory</h2>
+            <p class="text-muted mb-0">Browse certified medical specialists and check consultation availability.</p>
+        </div>
+        <a asp-controller="Patient" asp-action="Book" class="btn btn-primary-custom mt-3 mt-md-0">
+            <i class="bi bi-calendar-plus me-1"></i> Quick Book Appointment
+        </a>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="med-card p-4 mb-4">
+        <form asp-action="Doctors" method="get" class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Search by Name or Specialization</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" value="@search" class="form-control" placeholder="Search doctor name, qualification, or keywords..." />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Filter by Department</label>
+                <select name="departmentId" class="form-select">
+                    <option value="">All Departments</option>
+                    @foreach (var dept in departments)
+                    {
+                        <option value="@dept.DepartmentId" selected="@(selectedDept == dept.DepartmentId)">@dept.DepartmentName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2 d-grid align-items-end">
+                <button type="submit" class="btn btn-primary-custom"><i class="bi bi-funnel"></i> Apply Filter</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Doctors Cards Grid -->
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 bg-white rounded-3 border">
+            <i class="bi bi-search-heart text-muted display-1"></i>
+            <h4 class="fw-bold text-dark mt-3">No Doctors Found</h4>
+            <p class="text-muted">We couldn't find any doctor matching your search criteria. Try clearing filters.</p>
+            <a asp-action="Doctors" class="btn btn-outline-custom">Reset Search Filter</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var doc in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="med-card h-100 p-4 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 fs-2">
+                                    <i class="bi bi-person-heart"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold mb-1 text-dark">Dr. @doc.User.FullName</h5>
+                                    <span class="badge bg-primary">@doc.Department.DepartmentName</span>
+                                    <div class="text-muted small mt-1"><i class="bi bi-briefcase me-1"></i> @doc.Experience Years Exp.</div>
+                                </div>
+                            </div>
+                            <h6 class="fw-semibold text-secondary mb-2">@doc.Specialization</h6>
+                            <p class="text-muted small mb-3">@doc.Qualification</p>
+                            <p class="text-muted small mb-3 text-truncate-2">@doc.Biography</p>
+                        </div>
+                        <div class="pt-3 border-top d-flex align-items-center justify-content-between">
+                            <div>
+                                <span class="text-muted small d-block">Consultation Fee</span>
+                                <span class="fw-bold text-success fs-5">$@doc.ConsultationFee</span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a asp-action="DoctorDetails" asp-route-id="@doc.DoctorId" class="btn btn-sm btn-outline-custom">Profile</a>
+                                <a asp-controller="Patient" asp-action="Book" asp-route-doctorId="@doc.DoctorId" class="btn btn-sm btn-primary-custom">Book Slot</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

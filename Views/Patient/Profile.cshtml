@@ -1,0 +1,68 @@
+@model HospitalAppointmentSystem.ViewModels.PatientFormViewModel
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="med-card p-4 p-md-5">
+            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-person-circle text-primary me-2"></i> Patient Profile</h4>
+            <p class="text-muted small mb-4">Manage your personal demographics and emergency contact details.</p>
+
+            <form asp-action="Profile" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="PatientId" />
+                <input type="hidden" asp-for="UserId" />
+                
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="FullName" class="form-label fw-semibold">Full Name *</label>
+                        <input asp-for="FullName" class="form-control" required />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label fw-semibold">Email Address (Read Only)</label>
+                        <input asp-for="Email" class="form-control bg-light" readonly />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Phone" class="form-label fw-semibold">Phone Number *</label>
+                        <input asp-for="Phone" class="form-control" required />
+                        <span asp-validation-for="Phone" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="DateOfBirth" class="form-label fw-semibold">Date of Birth</label>
+                        <input asp-for="DateOfBirth" type="date" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Gender" class="form-label fw-semibold">Gender</label>
+                        <select asp-for="Gender" class="form-select">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="EmergencyContact" class="form-label fw-semibold">Emergency Contact Phone</label>
+                        <input asp-for="EmergencyContact" class="form-control" />
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Address" class="form-label fw-semibold">Residential Address</label>
+                        <input asp-for="Address" class="form-control" />
+                    </div>
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-primary-custom px-4 py-2">
+                            <i class="bi bi-check-circle me-1"></i> Update Profile
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

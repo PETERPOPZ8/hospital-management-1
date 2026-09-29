@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="container py-5 text-center">
+    <div class="py-5">
+        <div class="stat-icon stat-icon-red mx-auto mb-4 display-1" style="width: 100px; height: 100px;">
+            <i class="bi bi-shield-x"></i>
+        </div>
+        <h2 class="fw-bold text-dark mb-2">403 - Access Denied</h2>
+        <p class="text-muted mb-4 max-w-md mx-auto">You do not have permission to view or access this module. Please ensure you are logged in with the appropriate user role (Admin, Doctor, or Patient).</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-custom">
+                <i class="bi bi-house me-1"></i> Return Home
+            </a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-primary-custom">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Switch User Log In
+            </a>
+        </div>
+    </div>
+</div>

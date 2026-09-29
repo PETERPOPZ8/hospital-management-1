@@ -1,0 +1,82 @@
+@model IEnumerable<HospitalAppointmentSystem.Models.Appointment>
+@{
+    ViewData["Title"] = "System Appointments";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    string currentStatus = ViewBag.CurrentStatus as string ?? "";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold text-dark mb-1"><i class="bi bi-journal-medical text-primary me-2"></i> All System Appointments</h4>
+        <p class="text-muted small mb-0">Full record overview and status administration.</p>
+    </div>
+</div>
+
+<!-- Filter Pills -->
+<div class="mb-4">
+    <div class="btn-group" role="group">
+        <a asp-action="Appointments" class="btn btn-sm @(string.IsNullOrEmpty(currentStatus) ? "btn-primary" : "btn-outline-secondary")">All</a>
+        <a asp-action="Appointments" asp-route-status="Pending" class="btn btn-sm @(currentStatus == "Pending" ? "btn-warning text-dark fw-bold" : "btn-outline-secondary")">Pending</a>
+        <a asp-action="Appointments" asp-route-status="Confirmed" class="btn btn-sm @(currentStatus == "Confirmed" ? "btn-info text-white fw-bold" : "btn-outline-secondary")">Confirmed</a>
+        <a asp-action="Appointments" asp-route-status="Completed" class="btn btn-sm @(currentStatus == "Completed" ? "btn-success" : "btn-outline-secondary")">Completed</a>
+        <a asp-action="Appointments" asp-route-status="Cancelled" class="btn btn-sm @(currentStatus == "Cancelled" ? "btn-danger" : "btn-outline-secondary")">Cancelled</a>
+    </div>
+</div>
+
+<div class="med-card p-4">
+    @if (!Model.Any())
+    {
+        <p class="text-muted text-center py-4">No appointments found matching filter criteria.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light small">
+                    <tr>
+                        <th>Ref #</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                        <th class="text-end">Status Override</th>
+                    </tr>
+                </thead>
+                <tbody class="small">
+                    @foreach (var appt in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-muted">#@appt.AppointmentId</td>
+                            <td>
+                                <div class="fw-semibold text-dark">@appt.Patient.User.FullName</div>
+                                <small class="text-muted">@appt.Patient.User.Phone</small>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">Dr. @appt.Doctor.User.FullName</div>
+                                <small class="text-muted">@appt.Doctor.Department.DepartmentName</small>
+                            </td>
+                            <td>
+                                <div>@appt.AppointmentDate.ToString("ddd, MMM dd, yyyy")</div>
+                                <small class="text-muted"><i class="bi bi-clock me-1"></i> @DateTime.Today.Add(appt.StartTime).ToString("hh:mm tt")</small>
+                            </td>
+                            <td><span class="badge badge-status badge-@appt.Status.ToLower()">@appt.Status</span></td>
+                            <td class="text-end">
+                                <form asp-action="UpdateAppointmentStatus" method="post" class="d-inline-flex gap-1">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="appointmentId" value="@appt.AppointmentId" />
+                                    <select name="status" class="form-select form-select-sm" style="width: 120px;" onchange="this.form.submit()">
+                                        <option value="Pending" selected="@(appt.Status == "Pending")">Pending</option>
+                                        <option value="Confirmed" selected="@(appt.Status == "Confirmed")">Confirmed</option>
+                                        <option value="Completed" selected="@(appt.Status == "Completed")">Completed</option>
+                                        <option value="Cancelled" selected="@(appt.Status == "Cancelled")">Cancelled</option>
+                                        <option value="Rejected" selected="@(appt.Status == "Rejected")">Rejected</option>
+                                    </select>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

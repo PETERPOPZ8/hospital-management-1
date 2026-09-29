@@ -1,0 +1,211 @@
+@{
+    ViewData["Title"] = "Healthcare Appointment System";
+    var featuredDoctors = ViewBag.FeaturedDoctors as List<HospitalAppointmentSystem.Models.Doctor> ?? new List<HospitalAppointmentSystem.Models.Doctor>();
+    var departments = ViewBag.Departments as List<HospitalAppointmentSystem.Models.Department> ?? new List<HospitalAppointmentSystem.Models.Department>();
+}
+
+<!-- Hero Section -->
+<div class="hero-section text-center text-lg-start">
+    <div class="container">
+        <div class="row align-items-center g-5 py-4">
+            <div class="col-lg-7">
+                <span class="badge bg-accent-custom bg-opacity-25 text-info px-3 py-2 rounded-pill mb-3 fw-semibold">
+                    <i class="bi bi-shield-check me-1"></i> Trusted Academic & Clinical Healthcare Platform
+                </span>
+                <h1 class="hero-title mb-3">Your Health Is Our Highest Priority</h1>
+                <p class="hero-subtitle mb-4">Book online consultations with certified medical specialists, manage clinic appointments in real-time, and access patient medical records seamlessly.</p>
+                <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                    <a asp-controller="Patient" asp-action="Book" class="btn btn-primary-custom btn-lg shadow-sm">
+                        <i class="bi bi-calendar-event me-2"></i> Book Appointment Now
+                    </a>
+                    <a asp-controller="Home" asp-action="Doctors" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-search me-2"></i> Browse Doctors
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-center">
+                <div class="p-4 bg-white bg-opacity-10 rounded-4 border border-white border-opacity-20 shadow-lg">
+                    <i class="bi bi-hospital text-info display-1 mb-3"></i>
+                    <h4 class="text-white fw-bold">Medicare Medical Center</h4>
+                    <p class="text-white-50 small mb-0">Multi-Specialty Clinic & Advanced Patient Care Hub</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Bar Box -->
+<div class="container">
+    <div class="search-card">
+        <form asp-controller="Home" asp-action="Doctors" method="get" class="row g-3 align-items-center">
+            <div class="col-md-5">
+                <label class="form-label small fw-bold text-uppercase text-muted">Search Doctor or Specialty</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-primary"></i></span>
+                    <input type="text" name="search" class="form-control bg-light border-start-0" placeholder="e.g. Dr. Sarah, Cardiologist, Joint Surgeon...">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-bold text-uppercase text-muted">Select Department</label>
+                <select name="departmentId" class="form-select bg-light">
+                    <option value="">All Medical Departments</option>
+                    @foreach (var dept in departments)
+                    {
+                        <option value="@dept.DepartmentId">@dept.DepartmentName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 d-grid">
+                <label class="form-label small fw-bold text-uppercase text-muted">&nbsp;</label>
+                <button type="submit" class="btn btn-primary-custom">
+                    <i class="bi bi-filter me-1"></i> Search Doctors
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Statistics Banner -->
+<div class="container my-5">
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="stat-card justify-content-center">
+                <div class="stat-icon stat-icon-blue"><i class="bi bi-person-badge"></i></div>
+                <div class="text-start">
+                    <h3 class="fw-bold mb-0 text-primary">@ViewBag.TotalDoctors+</h3>
+                    <span class="text-muted small">Specialist Doctors</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card justify-content-center">
+                <div class="stat-icon stat-icon-teal"><i class="bi bi-hospital"></i></div>
+                <div class="text-start">
+                    <h3 class="fw-bold mb-0 text-teal">@ViewBag.TotalDepartments</h3>
+                    <span class="text-muted small">Clinical Departments</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card justify-content-center">
+                <div class="stat-icon stat-icon-green"><i class="bi bi-emoji-smile"></i></div>
+                <div class="text-start">
+                    <h3 class="fw-bold mb-0 text-success">@ViewBag.TotalPatients+</h3>
+                    <span class="text-muted small">Registered Patients</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Departments Section -->
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <span class="text-primary fw-bold text-uppercase small">Comprehensive Care</span>
+        <h2 class="fw-bold text-dark">Our Medical Specialties</h2>
+        <p class="text-muted">Explore specialized clinical departments equipped with modern medical technology.</p>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var dept in departments)
+        {
+            <div class="col-md-6 col-lg-3">
+                <div class="med-card h-100 p-4 text-center">
+                    <div class="stat-icon stat-icon-blue mx-auto mb-3">
+                        <i class="bi @dept.IconClass fs-3"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">@dept.DepartmentName</h5>
+                    <p class="text-muted small mb-3">@dept.Description</p>
+                    <a asp-controller="Home" asp-action="Doctors" asp-route-departmentId="@dept.DepartmentId" class="btn btn-sm btn-outline-custom">
+                        View Doctors <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Featured Doctors Section -->
+<div class="container my-5">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <span class="text-primary fw-bold text-uppercase small">Medical Experts</span>
+            <h2 class="fw-bold text-dark mb-0">Featured Doctors</h2>
+        </div>
+        <a asp-controller="Home" asp-action="Doctors" class="btn btn-outline-custom">
+            See All Doctors <i class="bi bi-arrow-right me-1"></i>
+        </a>
+    </div>
+
+    <div class="row g-4">
+        @foreach (var doc in featuredDoctors)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="med-card h-100 p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="bg-light rounded-circle p-2 text-center text-primary border border-primary">
+                            <i class="bi bi-person-fill fs-1"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1 text-dark">Dr. @doc.User.FullName</h5>
+                            <span class="badge bg-primary text-white">@doc.Department.DepartmentName</span>
+                            <div class="text-muted small mt-1">@doc.Specialization</div>
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-3 text-truncate-2">@doc.Biography</p>
+                    <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+                        <div>
+                            <span class="text-muted small">Fee:</span>
+                            <span class="fw-bold text-success fs-5 ms-1">$@doc.ConsultationFee</span>
+                        </div>
+                        <a asp-controller="Home" asp-action="DoctorDetails" asp-route-id="@doc.DoctorId" class="btn btn-sm btn-primary-custom">
+                            View Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="bg-white py-5 my-5 border-top border-bottom">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="text-primary fw-bold text-uppercase small">Simple Workflow</span>
+            <h2 class="fw-bold text-dark">How It Works</h2>
+            <p class="text-muted">4 simple steps to schedule your doctor consultation online.</p>
+        </div>
+
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="p-3">
+                    <div class="stat-icon stat-icon-blue mx-auto mb-3 fs-3 fw-bold">1</div>
+                    <h6 class="fw-bold mb-2">Create Account</h6>
+                    <p class="text-muted small">Register as a patient with your name, phone, and medical credentials.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3">
+                    <div class="stat-icon stat-icon-teal mx-auto mb-3 fs-3 fw-bold">2</div>
+                    <h6 class="fw-bold mb-2">Choose Doctor</h6>
+                    <p class="text-muted small">Select your preferred doctor by medical specialty or fee.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3">
+                    <div class="stat-icon stat-icon-amber mx-auto mb-3 fs-3 fw-bold">3</div>
+                    <h6 class="fw-bold mb-2">Pick Time Slot</h6>
+                    <p class="text-muted small">View live calendar availability and reserve your slot.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3">
+                    <div class="stat-icon stat-icon-green mx-auto mb-3 fs-3 fw-bold">4</div>
+                    <h6 class="fw-bold mb-2">Get Confirmation</h6>
+                    <p class="text-muted small">Receive immediate booking confirmation and consultation notes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

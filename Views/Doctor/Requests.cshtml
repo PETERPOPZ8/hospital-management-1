@@ -1,0 +1,73 @@
+@model IEnumerable<HospitalAppointmentSystem.Models.Appointment>
+@{
+    ViewData["Title"] = "Pending Requests";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold text-dark mb-1"><i class="bi bi-bell-fill text-warning me-2"></i> Pending Appointment Requests</h4>
+        <p class="text-muted small mb-0">Review and approve or reject patient appointment booking requests.</p>
+    </div>
+</div>
+
+<div class="med-card p-4">
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-check-circle-fill text-success display-4"></i>
+            <h5 class="fw-bold text-dark mt-3">All Caught Up!</h5>
+            <p class="text-muted small">No pending booking requests waiting for approval.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light small">
+                    <tr>
+                        <th>Req ID</th>
+                        <th>Patient Name</th>
+                        <th>Requested Date</th>
+                        <th>Requested Time</th>
+                        <th>Reason for Consultation</th>
+                        <th class="text-end">Action Decision</th>
+                    </tr>
+                </thead>
+                <tbody class="small">
+                    @foreach (var req in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-muted">#@req.AppointmentId</td>
+                            <td>
+                                <a asp-action="PatientDetails" asp-route-id="@req.PatientId" class="fw-semibold text-dark text-decoration-none">
+                                    @req.Patient.User.FullName
+                                </a>
+                                <div class="text-muted small"><i class="bi bi-telephone me-1"></i> @req.Patient.User.Phone</div>
+                            </td>
+                            <td class="fw-semibold">@req.AppointmentDate.ToString("ddd, MMM dd, yyyy")</td>
+                            <td><span class="badge bg-light text-primary border"><i class="bi bi-clock me-1"></i> @DateTime.Today.Add(req.StartTime).ToString("hh:mm tt")</span></td>
+                            <td>@req.Reason</td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <form asp-action="Approve" asp-route-id="@req.AppointmentId" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="bi bi-check-lg me-1"></i> Approve
+                                        </button>
+                                    </form>
+                                    <form asp-action="Reject" asp-route-id="@req.AppointmentId" method="post" class="d-inline" data-confirm="Are you sure you want to reject this appointment request?">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-x-lg me-1"></i> Reject
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

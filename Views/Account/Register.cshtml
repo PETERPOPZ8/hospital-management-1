@@ -1,0 +1,94 @@
+@model HospitalAppointmentSystem.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Patient Registration";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-9 col-lg-7">
+            <div class="med-card p-4 p-md-5 shadow-lg">
+                <div class="text-center mb-4">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-inline-block mb-2">
+                        <i class="bi bi-person-plus-fill fs-2"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-1">Create Patient Account</h3>
+                    <p class="text-muted small">Register to book online appointments and access medical consultation history.</p>
+                </div>
+
+                <form asp-action="Register" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="FullName" class="form-label fw-semibold">Full Name *</label>
+                            <input asp-for="FullName" class="form-control" placeholder="John Doe" required />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label fw-semibold">Email Address *</label>
+                            <input asp-for="Email" class="form-control" placeholder="john@gmail.com" required />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Phone" class="form-label fw-semibold">Phone Number *</label>
+                            <input asp-for="Phone" class="form-control" placeholder="+1 (555) 000-0000" required />
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="DateOfBirth" class="form-label fw-semibold">Date of Birth</label>
+                            <input asp-for="DateOfBirth" class="form-control" type="date" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Gender" class="form-label fw-semibold">Gender</label>
+                            <select asp-for="Gender" class="form-select">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="EmergencyContact" class="form-label fw-semibold">Emergency Contact Phone</label>
+                            <input asp-for="EmergencyContact" class="form-control" placeholder="+1 (555) 999-9999" />
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Address" class="form-label fw-semibold">Residential Address</label>
+                            <input asp-for="Address" class="form-control" placeholder="123 Street Name, City, State" />
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Password" class="form-label fw-semibold">Password *</label>
+                            <div class="input-group">
+                                <input asp-for="Password" class="form-control" placeholder="At least 6 characters" required />
+                                <button class="btn btn-outline-secondary toggle-password" type="button"><i class="bi bi-eye"></i></button>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ConfirmPassword" class="form-label fw-semibold">Confirm Password *</label>
+                            <div class="input-group">
+                                <input asp-for="ConfirmPassword" class="form-control" placeholder="Re-enter password" required />
+                                <button class="btn btn-outline-secondary toggle-password" type="button"><i class="bi bi-eye"></i></button>
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-primary-custom w-100 py-2 shadow-sm">
+                                <i class="bi bi-check-circle me-1"></i> Register Patient Account
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="text-center small text-muted mt-4">
+                        Already registered? 
+                        <a asp-action="Login" class="fw-bold text-primary text-decoration-none">Log In Here</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

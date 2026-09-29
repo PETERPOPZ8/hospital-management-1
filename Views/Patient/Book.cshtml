@@ -1,0 +1,100 @@
+@model HospitalAppointmentSystem.ViewModels.BookAppointmentViewModel
+@{
+    ViewData["Title"] = "Book Appointment";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="med-card p-4 p-md-5">
+            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-calendar-plus text-primary me-2"></i> Book Doctor Appointment</h4>
+            <p class="text-muted small mb-4">Select a doctor, pick an available calendar slot, and submit your consultation request.</p>
+
+            <form asp-action="Book" method="post" id="bookingForm">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <!-- Step 1 & Step 2: Department & Doctor Selection -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">1. Select Medical Department</label>
+                        <select asp-for="SelectedDepartmentId" class="form-select" onchange="location.href='@Url.Action("Book")?departmentId=' + this.value">
+                            <option value="">-- All Departments --</option>
+                            @foreach (var dept in Model.Departments)
+                            {
+                                <option value="@dept.DepartmentId" selected="@(Model.SelectedDepartmentId == dept.DepartmentId)">@dept.DepartmentName</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">2. Select Doctor *</label>
+                        <select asp-for="DoctorId" id="doctorIdSelect" class="form-select" required>
+                            <option value="">-- Select a Doctor --</option>
+                            @foreach (var doc in Model.Doctors)
+                            {
+                                <option value="@doc.DoctorId" selected="@(Model.DoctorId == doc.DoctorId)">Dr. @doc.User.FullName (@doc.Specialization) - Fee: $@doc.ConsultationFee</option>
+                            }
+                        </select>
+                        <span asp-validation-for="DoctorId" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Selected Doctor Info Summary Badge -->
+                @if (Model.SelectedDoctor != null)
+                {
+                    <div class="bg-light p-3 rounded-3 mb-4 border d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon stat-icon-blue"><i class="bi bi-person-badge fs-3"></i></div>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0">Dr. @Model.SelectedDoctor.User.FullName</h6>
+                                <small class="text-muted">@Model.SelectedDoctor.Qualification | Exp: @Model.SelectedDoctor.Experience Yrs</small>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-muted small d-block">Consultation Fee</span>
+                            <span class="fw-bold text-success fs-5">$@Model.SelectedDoctor.ConsultationFee</span>
+                        </div>
+                    </div>
+                }
+
+                <!-- Step 3 & 4: Date & Slot Selection -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">3. Select Appointment Date *</label>
+                    <input asp-for="AppointmentDate" id="appointmentDateInput" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" style="max-width: 300px;" required />
+                    <span asp-validation-for="AppointmentDate" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">4. Available Time Slots *</label>
+                    <input type="hidden" asp-for="SelectedSlot" id="selectedSlotHiddenInput" />
+                    <div id="slotContainer" class="p-3 bg-light rounded-3 border">
+                        <div class="text-center py-3 text-muted">
+                            <div class="spinner-border spinner-border-sm me-2 text-primary"></div> Loading available slots...
+                        </div>
+                    </div>
+                    <span asp-validation-for="SelectedSlot" class="text-danger small d-block mt-1"></span>
+                </div>
+
+                <!-- Step 5: Reason for Consultation -->
+                <div class="mb-4">
+                    <label asp-for="Reason" class="form-label fw-semibold">5. Reason for Consultation / Chief Complaints *</label>
+                    <textarea asp-for="Reason" rows="4" class="form-control" placeholder="Describe symptoms, duration, or reason for visit (e.g. Chest tightness, routine wellness check, migraine)..." required></textarea>
+                    <span asp-validation-for="Reason" class="text-danger small"></span>
+                </div>
+
+                <!-- Action Submit Button -->
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary-custom px-4 py-2">
+                        <i class="bi bi-calendar-check me-1"></i> Confirm & Request Appointment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

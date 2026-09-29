@@ -1,0 +1,132 @@
+@model HospitalAppointmentSystem.ViewModels.ReportsViewModel
+@{
+    ViewData["Title"] = "Reports & Analytics";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold text-dark mb-1"><i class="bi bi-graph-up-arrow text-primary me-2"></i> Clinical Analytics & Reports</h4>
+        <p class="text-muted small mb-0">Exportable performance statistics, department revenue estimates, and booking volume summaries.</p>
+    </div>
+    <button onclick="window.print()" class="btn btn-outline-custom mt-3 mt-md-0">
+        <i class="bi bi-printer me-1"></i> Export / Print Report
+    </button>
+</div>
+
+<!-- Date Filter Form -->
+<div class="med-card p-3 mb-4">
+    <form asp-action="Reports" method="get" class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label small fw-semibold">Start Date</label>
+            <input type="date" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small fw-semibold">End Date</label>
+            <input type="date" name="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-4 d-grid">
+            <button type="submit" class="btn btn-sm btn-primary-custom"><i class="bi bi-filter me-1"></i> Generate Report</button>
+        </div>
+    </form>
+</div>
+
+<!-- Key Performance Indicators -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-blue"><i class="bi bi-journal-check"></i></div>
+            <div>
+                <h4 class="fw-bold mb-0 text-dark">@Model.TotalBookings</h4>
+                <span class="text-muted small">Total Bookings</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-green"><i class="bi bi-check-circle"></i></div>
+            <div>
+                <h4 class="fw-bold mb-0 text-success">@Model.CompletedCount</h4>
+                <span class="text-muted small">Completed Visits</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-red"><i class="bi bi-x-circle"></i></div>
+            <div>
+                <h4 class="fw-bold mb-0 text-danger">@Model.CancelledCount</h4>
+                <span class="text-muted small">Cancelled Bookings</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-teal"><i class="bi bi-cash-stack"></i></div>
+            <div>
+                <h4 class="fw-bold mb-0 text-teal">$@Model.EstimatedRevenue.ToString("N2")</h4>
+                <span class="text-muted small">Estimated Revenue</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Department Breakdown -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="med-card p-4 h-100">
+            <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">Department Volume & Revenue Breakdown</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small">
+                        <tr>
+                            <th>Department</th>
+                            <th>Appointments</th>
+                            <th class="text-end">Est. Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        @foreach (var dept in Model.DepartmentBreakdown)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@dept.DepartmentName</td>
+                                <td><span class="badge bg-light text-primary border">@dept.AppointmentCount Visits</span></td>
+                                <td class="text-end fw-bold text-success">$@dept.Revenue.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Record List -->
+    <div class="col-lg-6">
+        <div class="med-card p-4 h-100">
+            <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">Detailed Log (@Model.StartDate.ToString("MMM dd") - @Model.EndDate.ToString("MMM dd"))</h5>
+            <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small">
+                        <tr>
+                            <th>Date</th>
+                            <th>Doctor</th>
+                            <th>Patient</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        @foreach (var appt in Model.ReportAppointments)
+                        {
+                            <tr>
+                                <td>@appt.AppointmentDate.ToString("MMM dd, yyyy")</td>
+                                <td>Dr. @appt.Doctor.User.FullName</td>
+                                <td>@appt.Patient.User.FullName</td>
+                                <td><span class="badge badge-status badge-@appt.Status.ToLower()">@appt.Status</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,53 @@
+@model HospitalAppointmentSystem.ViewModels.ConsultationNoteViewModel
+@{
+    ViewData["Title"] = "Add Consultation Note";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="med-card p-4 p-md-5">
+            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-journal-plus text-primary me-2"></i> Clinical Consultation & Prescription Note</h4>
+            <p class="text-muted small mb-4">Record medical observations, diagnosis notes, and prescribed medications.</p>
+
+            <div class="bg-light p-3 rounded-3 border mb-4">
+                <div class="row g-2 small">
+                    <div class="col-md-6"><strong>Patient Name:</strong> @Model.PatientName (@Model.PatientGender, @(Model.PatientAge.HasValue ? $"{Model.PatientAge} Yrs" : "N/A"))</div>
+                    <div class="col-md-6"><strong>Appointment Date:</strong> @Model.AppointmentDate.ToString("MMM dd, yyyy")</div>
+                    <div class="col-12 mt-2"><strong>Reason for Visit:</strong> @Model.Reason</div>
+                </div>
+            </div>
+
+            <form asp-action="AddNote" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="AppointmentId" />
+                <input type="hidden" asp-for="DoctorId" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div class="mb-4">
+                    <label asp-for="Notes" class="form-label fw-semibold">Consultation Notes & Observations *</label>
+                    <textarea asp-for="Notes" rows="5" class="form-control" placeholder="Enter clinical evaluation, examination results, patient symptoms, and diagnosis..." required></textarea>
+                    <span asp-validation-for="Notes" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Prescription" class="form-label fw-semibold">Prescription (Rx) / Medication Instructions</label>
+                    <textarea asp-for="Prescription" rows="4" class="form-control font-monospace" placeholder="e.g. 1. Amoxicillin 500mg - 1 tab 3x daily for 7 days&#10;2. Paracetamol 500mg - as needed for fever"></textarea>
+                    <span asp-validation-for="Prescription" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                    <a asp-action="Schedule" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-success px-4 py-2">
+                        <i class="bi bi-check-circle me-1"></i> Save & Mark Appointment Completed
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

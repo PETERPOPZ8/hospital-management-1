@@ -1,0 +1,53 @@
+@model HospitalAppointmentSystem.ViewModels.RescheduleViewModel
+@{
+    ViewData["Title"] = "Reschedule Appointment";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="med-card p-4 p-md-5">
+            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-arrow-repeat text-warning me-2"></i> Reschedule Appointment</h4>
+            <p class="text-muted small mb-4">Select a new date and time slot for your appointment with Dr. @Model.DoctorName.</p>
+
+            <div class="alert alert-light border mb-4">
+                <div class="small text-secondary mb-1"><strong>Current Schedule:</strong> @Model.OldDate.ToString("MMM dd, yyyy") at @DateTime.Today.Add(Model.OldStartTime).ToString("hh:mm tt")</div>
+                <div class="small text-secondary"><strong>Doctor:</strong> Dr. @Model.DoctorName (@Model.Specialization)</div>
+            </div>
+
+            <form asp-action="Reschedule" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="AppointmentId" />
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Select New Date *</label>
+                    <input asp-for="NewDate" id="appointmentDateInput" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" style="max-width: 300px;" required />
+                    <span asp-validation-for="NewDate" class="text-danger small"></span>
+                </div>
+
+                <input type="hidden" id="doctorIdSelect" value="@ViewBag.DoctorId" />
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Select New Time Slot *</label>
+                    <input type="hidden" asp-for="SelectedSlot" id="selectedSlotHiddenInput" />
+                    <div id="slotContainer" class="p-3 bg-light rounded-3 border">
+                        <div class="text-center py-3 text-muted">Select a date to fetch available slots.</div>
+                    </div>
+                    <span asp-validation-for="SelectedSlot" class="text-danger small d-block mt-1"></span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                    <a asp-action="Appointments" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary-custom px-4 py-2">
+                        <i class="bi bi-check-circle me-1"></i> Save New Schedule
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

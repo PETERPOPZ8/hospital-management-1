@@ -1,0 +1,80 @@
+@model HospitalAppointmentSystem.Models.Patient
+@{
+    ViewData["Title"] = $"Patient - {Model.User.FullName}";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="mb-4">
+    <a asp-action="Schedule" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Schedule
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- Patient Profile Summary -->
+    <div class="col-lg-4">
+        <div class="med-card p-4 text-center">
+            <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-4 display-4 mx-auto mb-3" style="width: 100px; height: 100px;">
+                <i class="bi bi-person"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-1">@Model.User.FullName</h4>
+            <p class="text-muted small mb-3">Patient ID: #@Model.PatientId</p>
+
+            <hr class="my-3" />
+
+            <div class="d-grid gap-2 text-start small">
+                <div><i class="bi bi-envelope text-primary me-2"></i> <strong>Email:</strong> @Model.User.Email</div>
+                <div><i class="bi bi-telephone text-primary me-2"></i> <strong>Phone:</strong> @Model.User.Phone</div>
+                <div><i class="bi bi-gender-ambiguous text-primary me-2"></i> <strong>Gender:</strong> @Model.Gender</div>
+                <div><i class="bi bi-calendar-event text-primary me-2"></i> <strong>DOB:</strong> @(Model.DateOfBirth?.ToString("MMM dd, yyyy") ?? "N/A")</div>
+                <div><i class="bi bi-shield-exclamation text-primary me-2"></i> <strong>Emergency:</strong> @(string.IsNullOrEmpty(Model.EmergencyContact) ? "N/A" : Model.EmergencyContact)</div>
+                <div><i class="bi bi-geo-alt text-primary me-2"></i> <strong>Address:</strong> @(string.IsNullOrEmpty(Model.Address) ? "N/A" : Model.Address)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Consultation History & Notes -->
+    <div class="col-lg-8">
+        <div class="med-card p-4">
+            <h5 class="fw-bold text-dark mb-3 border-bottom pb-2"><i class="bi bi-journal-medical text-primary me-2"></i> Consultation Records with Dr. @User.Identity?.Name</h5>
+            @if (Model.Appointments == null || !Model.Appointments.Any())
+            {
+                <p class="text-muted text-center py-4">No prior consultation records found for this patient.</p>
+            }
+            else
+            {
+                <div class="d-grid gap-4">
+                    @foreach (var appt in Model.Appointments.OrderByDescending(a => a.AppointmentDate))
+                    {
+                        <div class="bg-light p-3 rounded-3 border">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="fw-bold text-primary">@appt.AppointmentDate.ToString("MMMM dd, yyyy") at @DateTime.Today.Add(appt.StartTime).ToString("hh:mm tt")</span>
+                                <span class="badge badge-status badge-@appt.Status.ToLower()">@appt.Status</span>
+                            </div>
+                            <p class="small text-secondary mb-2"><strong>Reason for Visit:</strong> @appt.Reason</p>
+
+                            @if (appt.ConsultationNote != null)
+                            {
+                                <div class="bg-white p-3 rounded-3 border mt-2">
+                                    <h6 class="fw-bold text-dark small mb-1"><i class="bi bi-file-earmark-text text-primary me-1"></i> Clinical Notes:</h6>
+                                    <p class="small text-dark mb-2">@appt.ConsultationNote.Notes</p>
+                                    @if (!string.IsNullOrEmpty(appt.ConsultationNote.Prescription))
+                                    {
+                                        <h6 class="fw-bold text-dark small mb-1"><i class="bi bi-prescription text-success me-1"></i> Prescription (Rx):</h6>
+                                        <pre class="bg-light p-2 rounded border small mb-0">@appt.ConsultationNote.Prescription</pre>
+                                    }
+                                </div>
+                            }
+                            else if (appt.Status == "Confirmed" || appt.Status == "Pending")
+                            {
+                                <a asp-action="AddNote" asp-route-appointmentId="@appt.AppointmentId" class="btn btn-sm btn-outline-success mt-2">
+                                    <i class="bi bi-journal-plus me-1"></i> Add Consultation Note
+                                </a>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

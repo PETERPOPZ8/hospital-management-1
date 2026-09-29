@@ -1,0 +1,96 @@
+@model IEnumerable<HospitalAppointmentSystem.Models.Appointment>
+@{
+    ViewData["Title"] = "My Appointments";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    string currentFilter = ViewBag.CurrentStatusFilter as string ?? "";
+}
+
+<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold text-dark mb-1"><i class="bi bi-calendar-check text-primary me-2"></i> My Appointment History</h4>
+        <p class="text-muted small mb-0">Track all your past, upcoming, and pending doctor appointments.</p>
+    </div>
+    <a asp-action="Book" class="btn btn-primary-custom mt-3 mt-md-0">
+        <i class="bi bi-plus-lg me-1"></i> New Appointment
+    </a>
+</div>
+
+<!-- Status Filter Pills -->
+<div class="mb-4">
+    <div class="btn-group" role="group" aria-label="Status Filter">
+        <a asp-action="Appointments" class="btn btn-sm @(string.IsNullOrEmpty(currentFilter) ? "btn-primary" : "btn-outline-secondary")">All</a>
+        <a asp-action="Appointments" asp-route-status="Pending" class="btn btn-sm @(currentFilter == "Pending" ? "btn-warning text-dark fw-bold" : "btn-outline-secondary")">Pending</a>
+        <a asp-action="Appointments" asp-route-status="Confirmed" class="btn btn-sm @(currentFilter == "Confirmed" ? "btn-info text-white fw-bold" : "btn-outline-secondary")">Confirmed</a>
+        <a asp-action="Appointments" asp-route-status="Completed" class="btn btn-sm @(currentFilter == "Completed" ? "btn-success" : "btn-outline-secondary")">Completed</a>
+        <a asp-action="Appointments" asp-route-status="Cancelled" class="btn btn-sm @(currentFilter == "Cancelled" ? "btn-danger" : "btn-outline-secondary")">Cancelled</a>
+    </div>
+</div>
+
+<!-- Table Card -->
+<div class="med-card p-4">
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-journal-x text-muted display-4"></i>
+            <h5 class="fw-bold text-dark mt-3">No Appointments Found</h5>
+            <p class="text-muted small">No appointment records match the selected status filter.</p>
+            <a asp-action="Book" class="btn btn-sm btn-primary-custom">Book Appointment Now</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light small">
+                    <tr>
+                        <th>ID</th>
+                        <th>Doctor Name</th>
+                        <th>Department</th>
+                        <th>Date & Time</th>
+                        <th>Consultation Fee</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="small">
+                    @foreach (var appt in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-muted">#@appt.AppointmentId</td>
+                            <td>
+                                <div class="fw-semibold text-dark">Dr. @appt.Doctor.User.FullName</div>
+                                <small class="text-muted">@appt.Doctor.Specialization</small>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">@appt.Doctor.Department.DepartmentName</span></td>
+                            <td>
+                                <div class="fw-semibold">@appt.AppointmentDate.ToString("ddd, MMM dd, yyyy")</div>
+                                <small class="text-muted"><i class="bi bi-clock me-1"></i> @DateTime.Today.Add(appt.StartTime).ToString("hh:mm tt")</small>
+                            </td>
+                            <td class="fw-bold text-success">$@appt.Doctor.ConsultationFee</td>
+                            <td><span class="badge badge-status badge-@appt.Status.ToLower()">@appt.Status</span></td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <a asp-action="AppointmentDetails" asp-route-id="@appt.AppointmentId" class="btn btn-sm btn-outline-custom" title="View Details">
+                                        <i class="bi bi-eye"></i> Details
+                                    </a>
+                                    @if (appt.Status == "Pending" || appt.Status == "Confirmed")
+                                    {
+                                        <a asp-action="Reschedule" asp-route-id="@appt.AppointmentId" class="btn btn-sm btn-outline-warning text-dark" title="Reschedule">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </a>
+                                        <form asp-action="Cancel" asp-route-id="@appt.AppointmentId" method="post" class="d-inline" data-confirm="Are you sure you want to cancel appointment #@appt.AppointmentId?">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel Appointment">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -1,0 +1,176 @@
+@model HospitalAppointmentSystem.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Command Center";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<!-- Welcome Banner -->
+<div class="bg-secondary text-white p-4 rounded-3 mb-4 shadow-sm">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h3 class="fw-bold mb-1"><i class="bi bi-shield-lock-fill text-primary me-2"></i> Clinic Operations Dashboard</h3>
+            <p class="mb-0 text-white-50">System-wide monitoring, doctor & patient records management, and real-time appointment analytics.</p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0 d-flex gap-2 justify-content-md-end">
+            <a asp-action="DoctorForm" class="btn btn-primary-custom shadow-sm"><i class="bi bi-person-plus me-1"></i> Add Doctor</a>
+            <a asp-action="Reports" class="btn btn-outline-light"><i class="bi bi-graph-up me-1"></i> Reports</a>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-blue"><i class="bi bi-people"></i></div>
+            <div>
+                <h4 class="fw-bold mb-0 text-dark">@Model.TotalPatients</h4>
+                <span class="text-muted small">Total Patients</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-teal"><i class="bi bi-person-badge"></i></div>
+            <div>
+                <h4 class="fw-bold mb-0 text-teal">@Model.TotalDoctors</h4>
+                <span class="text-muted small">Active Doctors</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-amber"><i class="bi bi-hospital"></i></div>
+            <div>
+                <h4 class="fw-bold mb-0 text-warning">@Model.TotalDepartments</h4>
+                <span class="text-muted small">Departments</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-green"><i class="bi bi-journal-medical"></i></div>
+            <div>
+                <h4 class="fw-bold mb-0 text-success">@Model.TotalAppointments</h4>
+                <span class="text-muted small">Total Appointments</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Secondary Stats Bar -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="bg-white p-3 rounded-3 border d-flex align-items-center justify-content-between">
+            <span class="text-muted small">Today's Appointments</span>
+            <span class="badge bg-primary fs-6">@Model.TodayAppointmentsCount</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="bg-white p-3 rounded-3 border d-flex align-items-center justify-content-between">
+            <span class="text-muted small">Pending Approval</span>
+            <span class="badge bg-warning text-dark fs-6">@Model.PendingRequestsCount</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="bg-white p-3 rounded-3 border d-flex align-items-center justify-content-between">
+            <span class="text-muted small">Completed Visits</span>
+            <span class="badge bg-success fs-6">@Model.CompletedAppointmentsCount</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="bg-white p-3 rounded-3 border d-flex align-items-center justify-content-between">
+            <span class="text-muted small">Cancelled / Rejected</span>
+            <span class="badge bg-danger fs-6">@Model.CancelledAppointmentsCount</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Activity Table -->
+    <div class="col-lg-8">
+        <div class="med-card p-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                <h5 class="fw-bold text-dark mb-0"><i class="bi bi-clock-history text-primary me-2"></i> Recent System Appointments</h5>
+                <a asp-action="Appointments" class="small fw-semibold text-primary text-decoration-none">Manage All</a>
+            </div>
+
+            @if (!Model.RecentAppointments.Any())
+            {
+                <p class="text-muted text-center py-4">No appointments recorded yet.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light small">
+                            <tr>
+                                <th>Ref #</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="small">
+                            @foreach (var appt in Model.RecentAppointments)
+                            {
+                                <tr>
+                                    <td class="fw-bold text-muted">#@appt.AppointmentId</td>
+                                    <td>@appt.Patient.User.FullName</td>
+                                    <td>Dr. @appt.Doctor.User.FullName</td>
+                                    <td>
+                                        <div>@appt.AppointmentDate.ToString("MMM dd, yyyy")</div>
+                                        <small class="text-muted">@DateTime.Today.Add(appt.StartTime).ToString("hh:mm tt")</small>
+                                    </td>
+                                    <td><span class="badge badge-status badge-@appt.Status.ToLower()">@appt.Status</span></td>
+                                    <td class="text-end">
+                                        <a asp-action="Appointments" class="btn btn-sm btn-light border text-primary">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Active Departments & Top Doctors -->
+    <div class="col-lg-4">
+        <div class="med-card p-4 mb-4">
+            <h5 class="fw-bold text-dark mb-3 border-bottom pb-2"><i class="bi bi-hospital text-primary me-2"></i> Departments Overview</h5>
+            <div class="d-grid gap-2">
+                @foreach (var dept in Model.Departments)
+                {
+                    <div class="d-flex align-items-center justify-content-between p-2 bg-light rounded-3 border">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi @dept.IconClass text-primary fs-5"></i>
+                            <span class="fw-semibold text-dark small">@dept.DepartmentName</span>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">@dept.Doctors.Count Doctors</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="med-card p-4">
+            <h5 class="fw-bold text-dark mb-3 border-bottom pb-2"><i class="bi bi-star text-warning me-2"></i> Certified Medical Staff</h5>
+            <div class="d-grid gap-3">
+                @foreach (var doc in Model.TopDoctors)
+                {
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="fw-bold text-dark small">Dr. @doc.User.FullName</div>
+                            <small class="text-muted">@doc.Department.DepartmentName</small>
+                        </div>
+                        <span class="fw-bold text-success small">$@doc.ConsultationFee</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

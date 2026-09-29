@@ -1,0 +1,106 @@
+@model HospitalAppointmentSystem.Models.Doctor
+@{
+    ViewData["Title"] = $"Dr. {Model.User.FullName}";
+}
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-action="Doctors">Doctors</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Dr. @Model.User.FullName</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Doctor Profile Card -->
+        <div class="col-lg-4">
+            <div class="med-card p-4 text-center">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-4 display-3 mx-auto mb-3" style="width: 120px; height: 120px;">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+                <h4 class="fw-bold text-dark mb-1">Dr. @Model.User.FullName</h4>
+                <p class="text-primary fw-semibold mb-2">@Model.Department.DepartmentName</p>
+                <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill mb-3">
+                    <i class="bi bi-check-circle-fill me-1"></i> Certified Medical Practitioner
+                </span>
+
+                <hr class="my-3" />
+
+                <div class="d-grid gap-2 text-start small mb-4">
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Specialization:</span>
+                        <span class="fw-semibold text-dark">@Model.Specialization</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Experience:</span>
+                        <span class="fw-semibold text-dark">@Model.Experience Years</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Consultation Fee:</span>
+                        <span class="fw-bold text-success fs-6">$@Model.ConsultationFee</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Contact Phone:</span>
+                        <span class="fw-semibold text-dark">@Model.User.Phone</span>
+                    </div>
+                </div>
+
+                <a asp-controller="Patient" asp-action="Book" asp-route-doctorId="@Model.DoctorId" class="btn btn-primary-custom w-100 py-2 shadow-sm">
+                    <i class="bi bi-calendar-check me-2"></i> Book Appointment Now
+                </a>
+            </div>
+        </div>
+
+        <!-- Doctor Details & Schedule Info -->
+        <div class="col-lg-8">
+            <div class="med-card p-4 mb-4">
+                <h5 class="fw-bold text-dark mb-3 border-bottom pb-2"><i class="bi bi-mortarboard text-primary me-2"></i> Qualifications & Bio</h5>
+                <h6 class="fw-bold text-secondary mb-2">Degrees & Credentials:</h6>
+                <p class="text-dark bg-light p-3 rounded-3 mb-4 border-start border-primary border-4">@Model.Qualification</p>
+
+                <h6 class="fw-bold text-secondary mb-2">Biography & Clinical Experience:</h6>
+                <p class="text-muted leading-relaxed mb-0">@Model.Biography</p>
+            </div>
+
+            <!-- Schedule Availabilities Card -->
+            <div class="med-card p-4">
+                <h5 class="fw-bold text-dark mb-3 border-bottom pb-2"><i class="bi bi-clock-history text-primary me-2"></i> Upcoming Working Schedule</h5>
+                @if (Model.Availabilities == null || !Model.Availabilities.Any())
+                {
+                    <p class="text-muted small mb-0">Standard practice hours: Monday - Saturday (09:00 AM - 05:00 PM).</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Available Date</th>
+                                    <th>Practice Hours</th>
+                                    <th>Slot Duration</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var avail in Model.Availabilities)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@avail.AvailableDate.ToString("ddd, MMM dd, yyyy")</td>
+                                        <td><span class="badge bg-light text-dark border"><i class="bi bi-clock me-1 text-primary"></i> @DateTime.Today.Add(avail.StartTime).ToString("hh:mm tt") - @DateTime.Today.Add(avail.EndTime).ToString("hh:mm tt")</span></td>
+                                        <td>@avail.SlotDuration mins</td>
+                                        <td>
+                                            <a asp-controller="Patient" asp-action="Book" asp-route-doctorId="@Model.DoctorId" class="btn btn-sm btn-outline-custom">
+                                                Select Date
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

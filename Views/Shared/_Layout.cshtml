@@ -1,0 +1,144 @@
+@using System.Security.Claims
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Medicare Clinic</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <!-- Custom Theme CSS -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand navbar-brand-logo" asp-controller="Home" asp-action="Index">
+                <i class="bi bi-heart-pulse-fill text-primary fs-3"></i> Medicare Clinic
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-menu navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index"><i class="bi bi-house-door me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Doctors"><i class="bi bi-person-badge me-1"></i> Find Doctors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="About"><i class="bi bi-building me-1"></i> About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Contact"><i class="bi bi-envelope me-1"></i> Contact Us</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        var role = User.FindFirstValue(ClaimTypes.Role);
+                        string dashboardAction = role switch
+                        {
+                            "Admin" => "Index",
+                            "Doctor" => "Index",
+                            "Patient" => "Index",
+                            _ => "Index"
+                        };
+                        string dashboardController = role switch
+                        {
+                            "Admin" => "Admin",
+                            "Doctor" => "Doctor",
+                            "Patient" => "Patient",
+                            _ => "Home"
+                        };
+
+                        <a asp-controller="@dashboardController" asp-action="@dashboardAction" class="btn btn-primary-custom">
+                            <i class="bi bi-speedometer2 me-1"></i> @role Dashboard
+                        </a>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-custom">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Log In
+                        </a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-primary-custom">
+                            <i class="bi bi-person-plus me-1"></i> Book Appointment
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Body Container -->
+    <main role="main">
+        <div class="container mt-3">
+            @await Html.PartialAsync("_NotificationToast")
+        </div>
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row g-4 pb-4 border-bottom border-secondary">
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="text-white fw-bold mb-3"><i class="bi bi-heart-pulse-fill text-primary"></i> Medicare Clinic</h5>
+                    <p class="small text-muted mb-3">Providing accessible, state-of-the-art medical appointment scheduling and clinical care services for patients and families.</p>
+                    <div class="d-flex gap-3 fs-5 text-light">
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="text-white fw-semibold mb-3">Quick Links</h6>
+                    <ul class="list-unstyled small d-grid gap-2">
+                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a asp-controller="Home" asp-action="Doctors">Find Doctors</a></li>
+                        <li><a asp-controller="Home" asp-action="About">About Us</a></li>
+                        <li><a asp-controller="Home" asp-action="Contact">Contact Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-white fw-semibold mb-3">Specializations</h6>
+                    <ul class="list-unstyled small d-grid gap-2 text-muted">
+                        <li>Cardiology & Heart Care</li>
+                        <li>Neurology & Brain Health</li>
+                        <li>Pediatrics & Child Wellness</li>
+                        <li>Orthopedics & Joint Care</li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-white fw-semibold mb-3">Clinic Hours & Contact</h6>
+                    <p class="small mb-1"><i class="bi bi-geo-alt me-2 text-primary"></i> 100 Medical Parkway, Suite 400</p>
+                    <p class="small mb-1"><i class="bi bi-telephone me-2 text-primary"></i> Emergency: +1 (800) 555-0199</p>
+                    <p class="small mb-1"><i class="bi bi-clock me-2 text-primary"></i> Mon - Sat: 8:00 AM - 8:00 PM</p>
+                </div>
+            </div>
+            <div class="pt-3 text-center small">
+                <p class="mb-0">&copy; @DateTime.Now.Year Medicare Clinic Management System. All rights reserved. B.Sc Final Year Academic Project.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = "Clinic Settings";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="med-card p-4 p-md-5">
+            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-gear-fill text-primary me-2"></i> Clinic Configuration & Rules</h4>
+            <p class="text-muted small mb-4">Configure operational clinic policies, cancellation grace windows, and system parameters.</p>
+
+            <form onsubmit="alert('Clinic settings updated successfully.'); return false;">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Hospital / Clinic Full Name</label>
+                    <input type="text" class="form-control" value="Medicare Multi-Specialty Clinic & Medical Center" />
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Default Slot Duration (Minutes)</label>
+                        <select class="form-select">
+                            <option value="15">15 Minutes</option>
+                            <option value="30" selected>30 Minutes</option>
+                            <option value="45">45 Minutes</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Cancellation Grace Window (Hours)</label>
+                        <select class="form-select">
+                            <option value="2">2 Hours Prior</option>
+                            <option value="12">12 Hours Prior</option>
+                            <option value="24" selected>24 Hours Prior</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Emergency Support Desk Phone</label>
+                    <input type="text" class="form-control" value="+1 (800) 555-0199" />
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Clinic Operating Address</label>
+                    <input type="text" class="form-control" value="100 Medical Parkway, Suite 400, Metropolitan City" />
+                </div>
+                <button type="submit" class="btn btn-primary-custom px-4">
+                    <i class="bi bi-check-circle me-1"></i> Save Configuration
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

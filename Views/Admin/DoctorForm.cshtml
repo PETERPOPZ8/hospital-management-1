@@ -1,0 +1,98 @@
+@model HospitalAppointmentSystem.ViewModels.DoctorFormViewModel
+@{
+    bool isEdit = Model.DoctorId.HasValue && Model.DoctorId > 0;
+    ViewData["Title"] = isEdit ? "Edit Doctor" : "Add New Doctor";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="med-card p-4 p-md-5">
+            <h4 class="fw-bold text-dark mb-1"><i class="bi bi-person-badge text-primary me-2"></i> @(isEdit ? "Update Doctor Profile" : "Register New Doctor Account")</h4>
+            <p class="text-muted small mb-4">Enter professional credentials, assigned department, and login details.</p>
+
+            <form asp-action="DoctorForm" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="DoctorId" />
+                <input type="hidden" asp-for="UserId" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="FullName" class="form-label fw-semibold">Full Name *</label>
+                        <input asp-for="FullName" class="form-control" placeholder="Dr. John Smith" required />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label fw-semibold">Email Address *</label>
+                        <input asp-for="Email" class="form-control" placeholder="doctor@hospital.com" readonly="@isEdit" required />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Phone" class="form-label fw-semibold">Phone Number *</label>
+                        <input asp-for="Phone" class="form-control" placeholder="+1 (555) 000-0000" required />
+                        <span asp-validation-for="Phone" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Password" class="form-label fw-semibold">@(isEdit ? "New Password (Leave blank to keep unchanged)" : "Account Password *")</label>
+                        <div class="input-group">
+                            <input asp-for="Password" class="form-control" placeholder="Set password" required="@(!isEdit)" />
+                            <button class="btn btn-outline-secondary toggle-password" type="button"><i class="bi bi-eye"></i></button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="DepartmentId" class="form-label fw-semibold">Department *</label>
+                        <select asp-for="DepartmentId" class="form-select" required>
+                            <option value="">-- Select Department --</option>
+                            @foreach (var dept in Model.Departments)
+                            {
+                                <option value="@dept.DepartmentId" selected="@(Model.DepartmentId == dept.DepartmentId)">@dept.DepartmentName</option>
+                            }
+                        </select>
+                        <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Qualification" class="form-label fw-semibold">Qualifications / Degrees *</label>
+                        <input asp-for="Qualification" class="form-control" placeholder="MD, FACC, MBBS..." required />
+                        <span asp-validation-for="Qualification" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Specialization" class="form-label fw-semibold">Specialization Area *</label>
+                        <input asp-for="Specialization" class="form-control" placeholder="Cardiology, Neuro-surgery..." required />
+                        <span asp-validation-for="Specialization" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="Experience" class="form-label fw-semibold">Experience (Yrs)</label>
+                        <input asp-for="Experience" type="number" class="form-control" min="0" max="70" />
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="ConsultationFee" class="form-label fw-semibold">Fee ($ USD)</label>
+                        <input asp-for="ConsultationFee" type="number" step="0.01" class="form-control" />
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Biography" class="form-label fw-semibold">Doctor Biography</label>
+                        <textarea asp-for="Biography" rows="3" class="form-control" placeholder="Clinical experience summary..."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input asp-for="IsActive" class="form-check-input" id="activeCheck" />
+                            <label class="form-check-label fw-semibold small" for="activeCheck">Active Doctor Status</label>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-4 d-flex justify-content-between">
+                        <a asp-action="Doctors" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary-custom px-4 py-2">
+                            <i class="bi bi-check-circle me-1"></i> Save Doctor Record
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

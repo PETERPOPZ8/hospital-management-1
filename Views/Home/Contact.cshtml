@@ -1,0 +1,69 @@
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<div class="container py-5">
+    <div class="row g-5">
+        <div class="col-lg-5">
+            <span class="text-primary fw-bold text-uppercase small">Get In Touch</span>
+            <h2 class="fw-bold text-dark mb-3">We Are Here To Help You</h2>
+            <p class="text-muted mb-4">Have questions regarding appointment bookings, doctor schedules, or clinic services? Contact our support team.</p>
+
+            <div class="d-grid gap-3">
+                <div class="d-flex align-items-start gap-3 p-3 bg-white border rounded-3 shadow-sm">
+                    <div class="stat-icon stat-icon-blue"><i class="bi bi-geo-alt"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Clinic Address</h6>
+                        <p class="text-muted small mb-0">100 Medical Parkway, Suite 400, Metropolitan City</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start gap-3 p-3 bg-white border rounded-3 shadow-sm">
+                    <div class="stat-icon stat-icon-teal"><i class="bi bi-telephone"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Phone & Emergency</h6>
+                        <p class="text-muted small mb-0">Help Desk: +1 (555) 019-2831<br>Emergency Line: +1 (800) 555-0199</p>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start gap-3 p-3 bg-white border rounded-3 shadow-sm">
+                    <div class="stat-icon stat-icon-amber"><i class="bi bi-clock"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Working Hours</h6>
+                        <p class="text-muted small mb-0">Monday - Saturday: 08:00 AM - 08:00 PM<br>Sunday: Emergency Services Only</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="med-card p-4">
+                <h4 class="fw-bold text-dark mb-3">Send Us A Message</h4>
+                <form asp-action="Contact" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Your Full Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="John Doe" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Your Email Address</label>
+                            <input type="email" name="email" class="form-control" placeholder="john@example.com" required />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Subject</label>
+                            <input type="text" name="subject" class="form-control" placeholder="Appointment Inquiry / General Question" required />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Message</label>
+                            <textarea name="message" rows="5" class="form-control" placeholder="Please write your inquiry here..." required></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary-custom px-4 py-2">
+                                <i class="bi bi-send me-1"></i> Send Message
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

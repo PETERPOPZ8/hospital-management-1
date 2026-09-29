@@ -1,0 +1,38 @@
+@model IEnumerable<HospitalAppointmentSystem.Models.Department>
+@{
+    ViewData["Title"] = "Department Management";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold text-dark mb-1"><i class="bi bi-hospital text-primary me-2"></i> Medical Departments</h4>
+        <p class="text-muted small mb-0">Configure hospital clinical departments and specialties.</p>
+    </div>
+    <a asp-action="DepartmentForm" class="btn btn-primary-custom">
+        <i class="bi bi-plus-lg me-1"></i> Add Department
+    </a>
+</div>
+
+<div class="row g-4">
+    @foreach (var dept in Model)
+    {
+        <div class="col-md-6 col-lg-4">
+            <div class="med-card p-4 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="stat-icon stat-icon-blue"><i class="bi @dept.IconClass fs-4"></i></div>
+                        <span class="badge bg-primary rounded-pill">@dept.Doctors.Count Doctors</span>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">@dept.DepartmentName</h5>
+                    <p class="text-muted small mb-3">@dept.Description</p>
+                </div>
+                <div class="pt-3 border-top text-end">
+                    <a asp-action="DepartmentForm" asp-route-id="@dept.DepartmentId" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-pencil me-1"></i> Edit Department
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

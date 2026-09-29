@@ -1,0 +1,79 @@
+@model IEnumerable<HospitalAppointmentSystem.Models.Appointment>
+@{
+    ViewData["Title"] = "Daily Schedule";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+    DateTime selectedDate = ViewBag.SelectedDate as DateTime? ?? DateTime.Today;
+}
+
+<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold text-dark mb-1"><i class="bi bi-calendar3 text-primary me-2"></i> Clinical Consultation Schedule</h4>
+        <p class="text-muted small mb-0">View scheduled patient visits and enter clinical consultation notes.</p>
+    </div>
+    <form asp-action="Schedule" method="get" class="d-flex align-items-center gap-2 mt-3 mt-md-0">
+        <label class="small fw-semibold text-muted mb-0">Date:</label>
+        <input type="date" name="date" value="@selectedDate.ToString("yyyy-MM-dd")" class="form-control form-control-sm" onchange="this.form.submit()" />
+    </form>
+</div>
+
+<div class="med-card p-4">
+    <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+        <h6 class="fw-bold text-primary mb-0">Schedule for @selectedDate.ToString("dddd, MMMM dd, yyyy")</h6>
+        <span class="badge bg-light text-dark border">Total Patients: @Model.Count()</span>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-calendar-check text-muted display-4"></i>
+            <h5 class="fw-bold text-dark mt-3">No Appointments Scheduled</h5>
+            <p class="text-muted small">No patient appointments found for @selectedDate.ToString("MMM dd, yyyy").</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light small">
+                    <tr>
+                        <th>Time Slot</th>
+                        <th>Patient Name</th>
+                        <th>Contact / Phone</th>
+                        <th>Chief Complaint / Reason</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="small">
+                    @foreach (var appt in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-primary">
+                                <i class="bi bi-clock me-1"></i> @DateTime.Today.Add(appt.StartTime).ToString("hh:mm tt") - @DateTime.Today.Add(appt.EndTime).ToString("hh:mm tt")
+                            </td>
+                            <td>
+                                <a asp-action="PatientDetails" asp-route-id="@appt.PatientId" class="fw-semibold text-dark text-decoration-none">
+                                    @appt.Patient.User.FullName
+                                </a>
+                                <div class="text-muted small">@appt.Patient.Gender</div>
+                            </td>
+                            <td>@appt.Patient.User.Phone</td>
+                            <td>@appt.Reason</td>
+                            <td><span class="badge badge-status badge-@appt.Status.ToLower()">@appt.Status</span></td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <a asp-action="PatientDetails" asp-route-id="@appt.PatientId" class="btn btn-sm btn-outline-secondary" title="View Patient Profile">
+                                        <i class="bi bi-person me-1"></i> Profile
+                                    </a>
+                                    <a asp-action="AddNote" asp-route-appointmentId="@appt.AppointmentId" class="btn btn-sm btn-primary-custom" title="Add Consultation Note">
+                                        <i class="bi bi-journal-plus me-1"></i> @(appt.ConsultationNote != null ? "Edit Note" : "Add Note")
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

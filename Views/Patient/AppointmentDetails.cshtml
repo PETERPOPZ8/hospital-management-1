@@ -1,0 +1,93 @@
+@model HospitalAppointmentSystem.Models.Appointment
+@{
+    ViewData["Title"] = $"Appointment #{Model.AppointmentId}";
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <a asp-action="Appointments" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Back to Appointments List
+            </a>
+            <button onclick="window.print();" class="btn btn-sm btn-outline-custom">
+                <i class="bi bi-printer me-1"></i> Print Booking Confirmation
+            </button>
+        </div>
+
+        <div class="med-card p-4 p-md-5 mb-4 shadow-sm">
+            <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">Appointment Confirmation Slip</h4>
+                    <span class="text-muted small">Reference No: <strong>#@Model.AppointmentId</strong></span>
+                </div>
+                <span class="badge badge-status badge-@Model.Status.ToLower() fs-6 px-3 py-2">@Model.Status</span>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <!-- Doctor Profile Column -->
+                <div class="col-md-6">
+                    <div class="bg-light p-3 rounded-3 border h-100">
+                        <h6 class="fw-bold text-primary mb-3"><i class="bi bi-person-badge me-2"></i> Doctor Information</h6>
+                        <h5 class="fw-bold text-dark mb-1">Dr. @Model.Doctor.User.FullName</h5>
+                        <p class="text-muted small mb-2">@Model.Doctor.Department.DepartmentName (@Model.Doctor.Specialization)</p>
+                        <p class="small text-secondary mb-1"><strong>Qualification:</strong> @Model.Doctor.Qualification</p>
+                        <p class="small text-secondary mb-0"><strong>Consultation Fee:</strong> <span class="fw-bold text-success">$@Model.Doctor.ConsultationFee</span></p>
+                    </div>
+                </div>
+
+                <!-- Schedule Column -->
+                <div class="col-md-6">
+                    <div class="bg-light p-3 rounded-3 border h-100">
+                        <h6 class="fw-bold text-primary mb-3"><i class="bi bi-clock-history me-2"></i> Date & Time Schedule</h6>
+                        <p class="small text-secondary mb-2"><strong>Appointment Date:</strong> <span class="fw-bold text-dark">@Model.AppointmentDate.ToString("dddd, MMMM dd, yyyy")</span></p>
+                        <p class="small text-secondary mb-2"><strong>Time Slot:</strong> <span class="fw-bold text-dark">@DateTime.Today.Add(Model.StartTime).ToString("hh:mm tt") - @DateTime.Today.Add(Model.EndTime).ToString("hh:mm tt")</span></p>
+                        <p class="small text-secondary mb-0"><strong>Booking Created:</strong> @Model.CreatedAt.ToString("MMM dd, yyyy hh:mm tt")</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reason Column -->
+            <div class="mb-4">
+                <h6 class="fw-bold text-dark mb-2"><i class="bi bi-chat-left-text text-primary me-2"></i> Consultation Reason / Chief Complaint</h6>
+                <div class="p-3 bg-light rounded-3 border text-secondary small">
+                    @Model.Reason
+                </div>
+            </div>
+
+            <!-- Consultation Notes & Prescription (if Completed) -->
+            @if (Model.ConsultationNote != null)
+            {
+                <div class="bg-success bg-opacity-10 p-4 rounded-3 border border-success border-opacity-25 mb-4">
+                    <h5 class="fw-bold text-success mb-3"><i class="bi bi-file-earmark-medical me-2"></i> Doctor's Clinical Diagnosis & Prescription</h5>
+                    <div class="mb-3">
+                        <h6 class="fw-bold text-dark small mb-1">Consultation Notes:</h6>
+                        <p class="text-dark small mb-0">@Model.ConsultationNote.Notes</p>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.ConsultationNote.Prescription))
+                    {
+                        <div>
+                            <h6 class="fw-bold text-dark small mb-1">Rx / Prescribed Medication:</h6>
+                            <pre class="bg-white p-3 rounded-3 border text-dark font-monospace mb-0 small">@Model.ConsultationNote.Prescription</pre>
+                        </div>
+                    }
+                </div>
+            }
+
+            <!-- Footer Actions -->
+            <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+                <small class="text-muted">Clinic Support: +1 (555) 019-2831</small>
+                @if (Model.Status == "Pending" || Model.Status == "Confirmed")
+                {
+                    <div class="d-flex gap-2">
+                        <a asp-action="Reschedule" asp-route-id="@Model.AppointmentId" class="btn btn-sm btn-warning text-dark font-semibold">Reschedule</a>
+                        <form asp-action="Cancel" asp-route-id="@Model.AppointmentId" method="post" data-confirm="Cancel this appointment?">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-danger">Cancel Appointment</button>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,19 @@
+## Visual Studio / .NET build outputs
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+.vs/
+.vscode/
+.idea/
+
+## User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+
+## SQLite local databases / WAL files
+*.db
+*.db-shm
+*.db-wal
