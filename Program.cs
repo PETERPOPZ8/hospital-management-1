@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using HospitalAppointmentSystem.Data;
 using HospitalAppointmentSystem.Services;
@@ -7,6 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // 1. Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 // Database Configuration
 // Standard SQL Server Connection String: Server=(localdb)\mssqllocaldb;Database=HospitalAppointmentDb;Trusted_Connection=True;...
@@ -49,6 +57,8 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 // 4. Database Initialization & Seeding on Startup
 using (var scope = app.Services.CreateScope())
